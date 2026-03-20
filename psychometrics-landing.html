@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psychometrics — Le Bouclier Décisionnel des Traders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #080A0E;
+    --surface: #0E1117;
+    --surface2: #141820;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #F0F2F7;
+    --muted: #6B7280;
+    --muted2: #9CA3AF;
+    --accent: #C8FF00;
+    --accent2: #A8D900;
+    --danger: #FF4545;
+    --warning: #FFB020;
+    --safe: #00D68F;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: .4;
+  }
+
+  /* ── GRID BG ── */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,255,0,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,255,0,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,10,14,0.85);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+    color: var(--muted2);
+    text-decoration: none;
+    transition: color .2s;
+    font-weight: 400;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+  }
+
+  .nav-cta:hover {
+    background: var(--accent2);
+    transform: translateY(-1px);
+  }
+
+  /* ── SECTIONS ── */
+  section { position: relative; z-index: 1; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(200,255,0,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(200,255,0,0.08);
+    border: 1px solid rgba(200,255,0,0.2);
+    border-radius: 99px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp .6s ease forwards .2s;
+  }
+
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 6vw, 78px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp .7s ease forwards .35s;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted2);
+    max-width: 580px;
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp .7s ease forwards .5s;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp .7s ease forwards .65s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    padding: 16px 32px;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .25s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(200,255,0,0.25);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted2);
+    border: 1px solid var(--border2);
+    padding: 16px 32px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all .25s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp .7s ease forwards .8s;
+  }
+
+  .stat-item {}
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .stat-num span { color: var(--accent); }
+  .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── PSYCHO SCORE WIDGET ── */
+  .hero-widget {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 340px;
+    opacity: 0;
+    animation: fadeLeft .9s ease forwards .9s;
+  }
+
+  @keyframes fadeLeft {
+    from { opacity: 0; transform: translateY(-50%) translateX(30px); }
+    to { opacity: 1; transform: translateY(-50%) translateX(0); }
+  }
+
+  .widget-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+  }
+
+  .widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .widget-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted2);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .widget-status {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: rgba(0,214,143,0.12);
+    color: var(--safe);
+    font-weight: 500;
+  }
+
+  .score-circle {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-circle svg {
+    position: absolute;
+    inset: 0;
+    transform: rotate(-90deg);
+  }
+
+  .score-circle-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 6; }
+  .score-circle-fill {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 82;
+    filter: drop-shadow(0 0 8px rgba(200,255,0,0.5));
+    animation: scoreAnim 2s ease forwards 1.2s;
+  }
+
+  @keyframes scoreAnim {
+    from { stroke-dashoffset: 314; }
+    to { stroke-dashoffset: 82; }
+  }
+
+  .score-number {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+  }
+
+  .score-bars { display: flex; flex-direction: column; gap: 10px; }
+
+  .score-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .score-bar-label {
+    font-size: 12px;
+    color: var(--muted);
+    width: 100px;
+    flex-shrink: 0;
+  }
+
+  .score-bar-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--accent);
+    animation: barAnim 1.5s ease forwards;
+    transform-origin: left;
+  }
+
+  @keyframes barAnim {
+    from { width: 0 !important; }
+  }
+
+  .score-bar-val {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted2);
+    width: 28px;
+    text-align: right;
+  }
+
+  .widget-alert {
+    margin-top: 16px;
+    background: rgba(255,69,69,0.08);
+    border: 1px solid rgba(255,69,69,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .alert-icon {
+    width: 20px;
+    height: 20px;
+    background: rgba(255,69,69,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 10px;
+  }
+
+  .alert-text {
+    font-size: 12px;
+    color: #FF8080;
+    line-height: 1.5;
+  }
+
+  /* ── PROBLEM ── */
+  .problem {
+    padding: 120px 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    color: var(--muted2);
+    max-width: 500px;
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 60px;
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .problem-card {
+    background: var(--surface2);
+    padding: 36px 32px;
+    transition: background .2s;
+  }
+
+  .problem-card:hover { background: #181D28; }
+
+  .problem-pct {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .problem-card:nth-child(1) .problem-pct { color: var(--danger); }
+  .problem-card:nth-child(2) .problem-pct { color: var(--warning); }
+  .problem-card:nth-child(3) .problem-pct { color: var(--accent); }
+
+  .problem-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .problem-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── SOLUTION ── */
+  .solution { padding: 120px 0; }
+
+  .solution-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-top: 60px;
+  }
+
+  .pillars { display: flex; flex-direction: column; gap: 4px; }
+
+  .pillar {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .pillar:hover, .pillar.active {
+    background: var(--surface);
+    border-color: var(--border2);
+  }
+
+  .pillar.active .pillar-num { background: var(--accent); color: var(--black); }
+
+  .pillar-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted2);
+    flex-shrink: 0;
+    transition: all .2s;
+  }
+
+  .pillar-body {}
+  .pillar-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .pillar-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .solution-visual {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 32px;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .visual-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted2);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .alert-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .alert-row.red { background: rgba(255,69,69,0.06); border-color: rgba(255,69,69,0.18); color: #FF8080; }
+  .alert-row.yellow { background: rgba(255,176,32,0.06); border-color: rgba(255,176,32,0.18); color: #FFD080; }
+  .alert-row.green { background: rgba(0,214,143,0.06); border-color: rgba(0,214,143,0.18); color: #60E8B8; }
+
+  .alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .alert-dot.red { background: var(--danger); box-shadow: 0 0 8px rgba(255,69,69,.5); }
+  .alert-dot.yellow { background: var(--warning); box-shadow: 0 0 8px rgba(255,176,32,.5); }
+  .alert-dot.green { background: var(--safe); box-shadow: 0 0 8px rgba(0,214,143,.5); }
+
+  .lock-banner {
+    background: rgba(255,69,69,0.08);
+    border: 1px solid rgba(255,69,69,0.25);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: auto;
+  }
+
+  .lock-title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--danger);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lock-desc { font-size: 13px; color: #FF8080; line-height: 1.5; }
+
+  /* ── PRICING ── */
+  .pricing { padding: 120px 0; background: var(--surface); border-top: 1px solid var(--border); }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 60px;
+  }
+
+  .pricing-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 28px;
+    position: relative;
+    transition: border-color .2s;
+  }
+
+  .pricing-card:hover { border-color: var(--border2); }
+
+  .pricing-card.featured {
+    background: var(--black);
+    border-color: rgba(200,255,0,0.3);
+    box-shadow: 0 0 40px rgba(200,255,0,0.06);
+  }
+
+  .pricing-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--black);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+
+  .pricing-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted2);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 16px;
+  }
+
+  .pricing-price {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .pricing-price sup { font-size: 22px; vertical-align: super; }
+  .pricing-period { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+
+  .pricing-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .pricing-features li {
+    font-size: 14px;
+    color: var(--muted2);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.4;
+  }
+
+  .pricing-features li::before {
+    content: '✓';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .pricing-features li.off {
+    opacity: 0.35;
+  }
+  .pricing-features li.off::before { content: '×'; color: var(--muted); }
+
+  .btn-plan {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+  }
+
+  .btn-plan.outline {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--text);
+  }
+
+  .btn-plan.outline:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .btn-plan.filled {
+    background: var(--accent);
+    border: none;
+    color: var(--black);
+  }
+
+  .btn-plan.filled:hover {
+    background: var(--accent2);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(200,255,0,0.2);
+  }
+
+  /* ── WAITLIST ── */
+  .waitlist {
+    padding: 120px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .waitlist-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(200,255,0,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .waitlist-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 60px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    max-width: 700px;
+    margin: 0 auto 20px;
+  }
+
+  .waitlist-sub {
+    font-size: 17px;
+    color: var(--muted2);
+    max-width: 480px;
+    margin: 0 auto 48px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .waitlist-form {
+    display: flex;
+    gap: 12px;
+    max-width: 480px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .waitlist-input {
+    flex: 1;
+    min-width: 240px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  .waitlist-input::placeholder { color: var(--muted); }
+  .waitlist-input:focus { border-color: rgba(200,255,0,0.4); }
+
+  .waitlist-btn {
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    padding: 16px 28px;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+
+  .waitlist-btn:hover {
+    background: var(--accent2);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(200,255,0,0.25);
+  }
+
+  .waitlist-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 16px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--muted);
+  }
+
+  .footer-copy { font-size: 13px; color: var(--muted); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .container { padding: 0 24px; }
+    .hero { padding: 100px 0 60px; }
+    .hero-widget { display: none; }
+    .hero h1 { font-size: 40px; }
+    .hero-stats { gap: 24px; flex-wrap: wrap; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .solution-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    Psychometrics
+  </div>
+  <ul class="nav-links">
+    <li><a href="#problem">Le problème</a></li>
+    <li><a href="#solution">La solution</a></li>
+    <li><a href="#pricing">Tarifs</a></li>
+  </ul>
+  <a href="#waitlist" class="nav-cta">Accès anticipé →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="container">
+    <div style="max-width: 660px;">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Premier bouclier décisionnel pour traders
+      </div>
+      <h1>
+        90% des traders perdent.<br>
+        Pas à cause du marché.<br>
+        À cause d'<em>eux-mêmes.</em>
+      </h1>
+      <p class="hero-sub">
+        Psychometrics détecte tes dérives comportementales en temps réel et intervient avant l'erreur — pas après. Le Psycho-Score qui protège ton capital.
+      </p>
+      <div class="hero-actions">
+        <a href="#waitlist" class="btn-primary">Rejoindre la beta gratuite</a>
+        <a href="#solution" class="btn-ghost">Voir comment ça marche</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">78<span>%</span></div>
+          <div class="stat-label">des pertes sont émotionnelles</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">-25<span>%</span></div>
+          <div class="stat-label">performance par violation de risk</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">0</div>
+          <div class="stat-label">solution temps réel sur le marché</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Widget flottant -->
+  <div class="hero-widget" style="right: calc(50% - 520px);">
+    <div class="widget-card">
+      <div class="widget-header">
+        <div class="widget-title">Psycho-Score</div>
+        <div class="widget-status">STABLE</div>
+      </div>
+      <div class="score-circle">
+        <svg viewBox="0 0 120 120">
+          <circle class="score-circle-bg" cx="60" cy="60" r="50"/>
+          <circle class="score-circle-fill" cx="60" cy="60" r="50"/>
+        </svg>
+        <div class="score-number">74</div>
+      </div>
+      <div class="score-bars">
+        <div class="score-bar-row">
+          <span class="score-bar-label">Respect du plan</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:80%"></div></div>
+          <span class="score-bar-val">20</span>
+        </div>
+        <div class="score-bar-row">
+          <span class="score-bar-label">Gestion risque</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:72%"></div></div>
+          <span class="score-bar-val">18</span>
+        </div>
+        <div class="score-bar-row">
+          <span class="score-bar-label">Constance</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:60%;background:var(--warning)"></div></div>
+          <span class="score-bar-val">12</span>
+        </div>
+        <div class="score-bar-row">
+          <span class="score-bar-label">Performance</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:76%"></div></div>
+          <span class="score-bar-val">15</span>
+        </div>
+      </div>
+      <div class="widget-alert">
+        <div class="alert-icon">⚠</div>
+        <div class="alert-text">Trade détecté 6 min après une perte. Risque revenge trading. Pause recommandée.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="container">
+    <div class="section-label">Le problème</div>
+    <h2 class="section-title reveal">L'industrie te ment<br>sur la raison de tes pertes.</h2>
+    <p class="section-sub reveal">Ce n'est pas ta stratégie. Ce n'est pas ton capital. C'est ton comportement sous pression.</p>
+    <div class="problem-grid reveal">
+      <div class="problem-card">
+        <div class="problem-pct">90%</div>
+        <div class="problem-title">des traders perdent la 1ère année</div>
+        <div class="problem-desc">Et 95% abandonnent avant 3 ans. Perte moyenne : 5 000 à 15 000€ par trader.</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-pct">78%</div>
+        <div class="problem-title">des pertes sont comportementales</div>
+        <div class="problem-desc">Revenge trading, overtrading, violation du risk management, décisions sous stress.</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-pct">0</div>
+        <div class="problem-title">outil d'intervention temps réel</div>
+        <div class="problem-desc">Tous les outils existants analysent après coup. Aucun n'intervient pendant la décision.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution" id="solution">
+  <div class="container">
+    <div class="section-label">La solution</div>
+    <h2 class="section-title reveal">Pas un journal de trading.<br>Un bouclier décisionnel.</h2>
+    <p class="section-sub reveal">Les autres outils sont un rétroviseur. Psychometrics est le frein automatique.</p>
+    <div class="solution-grid">
+      <div class="pillars reveal">
+        <div class="pillar active" onclick="setActive(this, 0)">
+          <div class="pillar-num">1</div>
+          <div class="pillar-body">
+            <div class="pillar-title">Audit baseline</div>
+            <div class="pillar-desc">Établit ton profil psycho-comportemental unique sur base de ton historique réel.</div>
+          </div>
+        </div>
+        <div class="pillar" onclick="setActive(this, 1)">
+          <div class="pillar-num">2</div>
+          <div class="pillar-body">
+            <div class="pillar-title">Séquence Sentinelle</div>
+            <div class="pillar-desc">Surveille en temps réel : latence décisionnelle, fréquence, taille de position.</div>
+          </div>
+        </div>
+        <div class="pillar" onclick="setActive(this, 2)">
+          <div class="pillar-num">3</div>
+          <div class="pillar-body">
+            <div class="pillar-title">Zone de Calme Émotionnelle</div>
+            <div class="pillar-desc">Identifie tes conditions optimales de performance et tes zones de vulnérabilité.</div>
+          </div>
+        </div>
+        <div class="pillar" onclick="setActive(this, 3)">
+          <div class="pillar-num">4</div>
+          <div class="pillar-body">
+            <div class="pillar-title">Monitoring de la Dérive</div>
+            <div class="pillar-desc">Mesure l'écart entre ton plan de trading et ton exécution réelle.</div>
+          </div>
+        </div>
+        <div class="pillar" onclick="setActive(this, 4)">
+          <div class="pillar-num">5</div>
+          <div class="pillar-body">
+            <div class="pillar-title">Smart Lock adaptatif</div>
+            <div class="pillar-desc">Réduit automatiquement ton levier ou bloque le trading en cas de dérive critique.</div>
+          </div>
+        </div>
+      </div>
+      <div class="solution-visual reveal">
+        <div class="visual-title">Alertes temps réel</div>
+        <div class="alert-row green">
+          <div class="alert-dot green"></div>
+          <div>Score 82/100 — Trading normal autorisé. Levier 100%.</div>
+        </div>
+        <div class="alert-row yellow">
+          <div class="alert-dot yellow"></div>
+          <div>3 trades en 45 min — Fréquence anormale détectée. Levier réduit à 50%.</div>
+        </div>
+        <div class="alert-row red">
+          <div class="alert-dot red"></div>
+          <div>Trade 6 min après perte — Risque revenge trading élevé. Pause recommandée.</div>
+        </div>
+        <div class="alert-row red">
+          <div class="alert-dot red"></div>
+          <div>Risque position : 3.2% — Limite dépassée (max 1%). Alerte critique.</div>
+        </div>
+        <div class="lock-banner">
+          <div class="lock-title">🔒 Smart Lock activé</div>
+          <div class="lock-desc">Score tombé à 38/100. Levier réduit à 20%. Pause 24h recommandée pour protéger ton capital.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-label">Tarifs</div>
+    <h2 class="section-title reveal">Simple. Transparent.<br>Rentabilisé dès le premier trade évité.</h2>
+    <div class="pricing-grid reveal">
+      <div class="pricing-card">
+        <div class="pricing-name">Starter</div>
+        <div class="pricing-price"><sup>€</sup>49</div>
+        <div class="pricing-period">par mois</div>
+        <ul class="pricing-features">
+          <li>Dashboard Psycho-Score</li>
+          <li>Import automatique trades</li>
+          <li>Alertes email</li>
+          <li>Journal comportemental</li>
+          <li class="off">Intégration MT5</li>
+          <li class="off">Smart Lock adaptatif</li>
+          <li class="off">Analyse drift avancée</li>
+        </ul>
+        <a href="#waitlist" class="btn-plan outline">Rejoindre la beta</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Le plus populaire</div>
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-price"><sup>€</sup>99</div>
+        <div class="pricing-period">par mois</div>
+        <ul class="pricing-features">
+          <li>Tout Starter +</li>
+          <li>Intégration MT5 / Myfxbook</li>
+          <li>Smart Lock adaptatif</li>
+          <li>Analyse drift avancée</li>
+          <li>Alertes SMS temps réel</li>
+          <li>Support prioritaire</li>
+          <li class="off">Coaching mensuel</li>
+        </ul>
+        <a href="#waitlist" class="btn-plan filled">Accès anticipé →</a>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-name">Elite</div>
+        <div class="pricing-price"><sup>€</sup>199</div>
+        <div class="pricing-period">par mois</div>
+        <ul class="pricing-features">
+          <li>Tout Pro +</li>
+          <li>Rapport PDF mensuel auto</li>
+          <li>Coaching comportemental 30 min</li>
+          <li>Accès API</li>
+          <li>Onboarding personnalisé</li>
+          <li>Accès fonctions beta</li>
+          <li>Dashboard prop firms</li>
+        </ul>
+        <a href="#waitlist" class="btn-plan outline">Rejoindre la beta</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section class="waitlist" id="waitlist">
+  <div class="waitlist-glow"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="section-label" style="text-align:center;">Accès anticipé</div>
+    <h2 class="waitlist-title reveal">Arrête de perdre<br>pour des raisons évitables.</h2>
+    <p class="waitlist-sub reveal">Rejoins les premiers traders à tester Psychometrics. Beta gratuite, places limitées.</p>
+    <div class="waitlist-form reveal">
+      <input type="email" class="waitlist-input" placeholder="ton@email.com" id="emailInput">
+      <button class="waitlist-btn" onclick="handleSubmit()">Rejoindre →</button>
+    </div>
+    <p class="waitlist-note" id="formNote">Aucun spam. Tu seras notifié en avant-première.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Psychometrics</div>
+  <div class="footer-copy">© 2026 Psychometrics. Tous droits réservés.</div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Pillar toggle
+  function setActive(el, idx) {
+    document.querySelectorAll('.pillar').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Waitlist submit
+  function handleSubmit() {
+    const input = document.getElementById('emailInput');
+    const note = document.getElementById('formNote');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) {
+      input.style.borderColor = 'rgba(255,69,69,0.5)';
+      return;
+    }
+    input.style.borderColor = 'rgba(200,255,0,0.4)';
+    input.value = '';
+    note.textContent = '✓ Tu es sur la liste. On te contacte très bientôt.';
+    note.style.color = 'var(--accent)';
+  }
+
+  // Enter key on input
+  document.getElementById('emailInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleSubmit();
+  });
+</script>
+</body>
+</html>
